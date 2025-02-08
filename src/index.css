@@ -298,3 +298,18 @@ grid-template-columns: repeat(2, 1fr);
       margin: auto;
   }
 }
+
+
+.clear-all {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.clear-all:hover {
+  background-color: darkred;
+}

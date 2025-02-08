@@ -1,53 +1,58 @@
-import { useState } from 'react'
-
-
-
-
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const SavedCountries = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        country: '',
-        bio: ''
+    const [savedCountries, setSavedCountries] = useState([]);
 
-    });
+    useEffect(() => {
+        
+        const storedCountries = JSON.parse(localStorage.getItem("savedCountries")) || [];
+        setSavedCountries(storedCountries);
+    }, []);
 
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        console.log(name, value);
-        setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+    const handleRemoveCountry = (countryName) => {
+    
+        const updatedCountries = savedCountries.filter((c) => c.name.common !== countryName);
+        setSavedCountries(updatedCountries);
+        localStorage.setItem("savedCountries", JSON.stringify(updatedCountries));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        let dataObj = formData;
-        console.log(dataObj);
-        setFormData({ name: '', email: '', country: '', bio: '' });
-
+    const handleClearAll = () => {
+        
+        setSavedCountries([]);
+        localStorage.removeItem("savedCountries");
     };
-
-
 
     return (
-        <>
-            <form className='formDataStyle' onSubmit={handleSubmit}>
-                <label htmlFor='name'>Name</label>
-                <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} />
-                <label htmlFor='email'>Email</label>
-                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} />
-                <label htmlFor='text'>Country</label>
-                <input type="text" name="country" id="country" value={formData.country} onChange={handleChange} />
-                <h3>Message</h3>
-                <textarea value={formData.bio} onChange={handleChange} name="bio" id="bio" />
-                <button type="submit">Submit</button>
-            </form>
-        </>
-    )
-}
+        <section className="saved-countries">
+            <Link to="/" className="btn btn-light">Back Home</Link>
+            <h2>Saved Countries</h2>
 
-
+            {savedCountries.length > 0 ? (
+                <>
+                    <button className="btn clear-all" onClick={handleClearAll}>
+                        Clear All
+                    </button>
+                    <div className="countries-list">
+                        {savedCountries.map((country) => (
+                            <div key={country.name.common} className="country-card">
+                                <img src={country.flags.png} alt={`${country.name.common} flag`} />
+                                <h3>{country.name.common}</h3>
+                                <button onClick={() => handleRemoveCountry(country.name.common)}>
+                                    Remove
+                                </button>
+                                <Link to={`/country/${country.name.common}`} className="btn">
+                                    View Country
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <p>No saved countries yet.</p>
+            )}
+        </section>
+    );
+};
 
 export default SavedCountries;
-
